@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Live Score</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+  </head>
+  <body>
+    <header>
+        <h1>Live Scores Uploader</h1>
+    </header>
+    <section class="display-score">
+      <div style="margin-right:100px;">
+        <div id="future">
+
+        </div>
+        <div>
+          <label>Team Name</label><br>
+          <input type="text" name="teamname" value="" id="teamname">
+        </div>
+        <div>
+          <label>Score</label><br>
+          <input type="number" name="score" value="" id="score">
+        </div><br>
+        <div style="text-align:center">
+          <button type="button" name="button" class="btn" style="text-align:center;font-size:20px;">Submit</button>
+        </div>
+      </div>
+      <div class="display-score">
+        <div>
+          <h1>LIVE SCORE</h1>
+          <table id="teamScoreDetails">
+            <th>Team Name</th>
+            <th>Score</th>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  <footer>
+    <a href="/" target="_blank" class="btn">View Live Score Page</a>
+  </footer>
+  </body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io.connect('http://localhost:3000');
+socket.on('getLiveScore', function(data) {
+  $('#teamScoreDetails').append(`
+    <tr>
+      <td>${data.team}</td>
+      <td>${data.score}</td>
+    </tr>
+    `)
+  });
+
+socket.on('connect', function(data) {
+  //Send data to server from browser
+    socket.emit('join', 'Hello World from browser');
+ });
+
+$('.btn').click(function(event) {
+  team = $('#teamname').val();
+  score = $('#score').val();
+  teamscore = {'team': team, 'score': score};
+
+  //Sending score from browser to server
+  socket.emit('scoreUpdate', teamscore);
+});
+
+socket.emit('test', 'Hello World');
+</script>
